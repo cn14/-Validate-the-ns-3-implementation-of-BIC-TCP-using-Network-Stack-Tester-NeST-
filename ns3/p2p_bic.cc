@@ -75,11 +75,11 @@ CwndTracer (uint32_t oldval, uint32_t newval)
 {
   if (firstCwnd)
     {
-      *cWndStream->GetStream () << "0.0 " << oldval << std::endl;
+      *cWndStream->GetStream () << "0.0 " << oldval/1500 << std::endl;
       firstCwnd = false;
     }
-  *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval << std::endl;
-  cWndValue = newval;
+  *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval/1500 << std::endl;
+  cWndValue = newval/1500;
 
   if (!firstSshThr)
     {
@@ -215,7 +215,7 @@ int main (int argc, char *argv[])
   bool tracing = true;
   std::string prefix_file_name = "p2p_bic";
   uint64_t data_mbytes = 0;
-  uint32_t mtu_bytes = 400;
+  uint32_t mtu_bytes = 1500;
   uint16_t num_flows = 1;
   double duration = 100.0;
   uint32_t run = 0;
@@ -230,7 +230,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, TcpLinuxReno, "
                 "TcpHybla, TcpHighSpeed, TcpHtcp, TcpVegas, TcpScalable, TcpVeno, "
                 "TcpBic, TcpYeah, TcpIllinois, TcpWestwood, TcpWestwoodPlus, TcpLedbat, "
-		"TcpLp, TcpDctcp, TcpCubic", transport_prot);
+    "TcpLp, TcpDctcp, TcpCubic", transport_prot);
   cmd.AddValue ("error_p", "Packet error rate", error_p);
   cmd.AddValue ("bandwidth", "Bottleneck bandwidth", bandwidth);
   cmd.AddValue ("delay", "Bottleneck delay", delay);
@@ -449,3 +449,4 @@ int main (int argc, char *argv[])
   Simulator::Destroy ();
   return 0;
 }
+  

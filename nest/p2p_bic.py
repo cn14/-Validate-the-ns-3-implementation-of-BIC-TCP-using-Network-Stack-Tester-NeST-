@@ -2,7 +2,7 @@
 # Copyright (c) 2019-2020 NITK Surathkal
 
 ########################
-# SHOULD BE RUN AS ROOT
+# SHOULD BE RUN AS ROOT#
 ########################
 from nest.experiment import *
 from nest.topology import *
@@ -10,56 +10,56 @@ from nest.topology import *
 ##############################
 # Topology
 #
-# n1 ----- n2
-#
+# n1 -->-- r1 -->-- n2
 ##############################
 
-# Creates two nodes, with the names n1 and n2
-# and returns it to the python variables `n1` and `n2`
-# The API takes in the name of the node as a string
-# the same name is used to return results
-n1 = Node("n1")
 n2 = Node("n2")
+r = Node("r")
+n1 = Node("n1")
+r.enable_ip_forwarding()
 
 # Connects the above two nodes using a veth (virtual Ethernet)
 # pair and returns the interfaces at the end points of the link
-# as a tuple `n1_n2` and `n2_n1`. `n1_n2` interface
-# is at `n1` and `n2_n1` interface is at `n2`.
+# as a tuple.
 # The API takes two nodes as the parameters
 # and returns the pair of interfaces
-(n1_n2, n2_n1) = connect(n1, n2)
+(n1_r, r_n1) = connect(n1, r)
+(r_n2, n2_r) = connect(r, n2)
 
-# Sets address to both the interfaces
-# The API takes the address as a string
-# The subnet also needs to be mentioned
-n1_n2.set_address("10.0.0.1/24")
-n2_n1.set_address("10.0.0.2/24")
+n1_r.set_address("10.1.1.1/24")
+r_n1.set_address("10.1.1.2/24")
+r_n2.set_address("10.1.2.2/24")
+n2_r.set_address("10.1.2.1/24")
+
+n1.add_route("DEFAULT", n1_r)
+n2.add_route("DEFAULT", n2_r)
 
 # Sets attributes such as bandwidth, latency and
 # queue discipline for the link.
-# Attributes for the link from `n1` to `n2` are set at interface
-# `n1_n2` (and vice versa)
-# Note that the bandwidth (and latency) need not be the same in both
-# directions, as in the real life scenario where upload bandwidth is
-# typically lower than download bandwidth
-n1_n2.set_attributes("5000mbit", "5ms", "pfifo")
-n2_n1.set_attributes("10000mbit", "100ms", "pfifo")
+# std::string bandwidth = "2Mbps";
+#   std::string delay = "0.01ms";
+#   std::string access_bandwidth = "10Mbps";
+#   std::string access_delay = "45ms";
+n1_r.set_attributes("10mbit", "45ms")
+r_n1.set_attributes("10mbit", "45ms")
 
-# Defines a flow between the two nodes `n1` and `n2`
+r_n2.set_attributes("2mbit", "0.01ms", "pfifo")
+n2_r.set_attributes("2mbit", "0.01ms")
+
+# Adds two flows between the two nodes `n1` and `n2`
 # The API takes in the source node, destination node,
 # destination address, start time and end time of
 # the flow and the number of flows
-flow = Flow(n1, n2, n2_n1.address, 0, 10, 2)
+flow = Flow(n1, n2, n2_r.get_address(), 0, 100, 3)
+#flow_udp = Flow(n1, n2, n2_r.get_address(), 0, 20, 1)
 
-# Define an experiment to be run on the above topology.
-# The API takes the experiment name as a string
-exp = Experiment("p2p_bic")
+exp = Experiment("tcp")
 
-# Add the above defined flow to the experiment.
-# The TCP flavor of the traffic generated can be
-# optionally given. Below we have chosen TCP Reno
-exp.add_tcp_flow(flow, "bic")
-
-# The experiment is run on the above topology with
-# the mentioned configurations.
+# Add the above defined flows to the experiment.
+# One of the flows added is udp and the other is
+# tcp and an optional arguement of target bandwidth
+# is given to the udp flow
+#exp.add_udp_flow(flow_udp, target_bandwidth="100mbit")
+exp.add_tcp_flow(flow,"bic")
+#exp.require_qdisc_stats(r_n2)
 exp.run()
