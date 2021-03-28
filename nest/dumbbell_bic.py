@@ -146,25 +146,33 @@ right_router.add_route("DEFAULT", right_router_connection)
 # Setting up the attributes of the connections between
 # the nodes on the left-side and the left-router
 for i in range(num_of_left_nodes):
-    left_node_connections[i][0].set_attributes("100mbit", "5ms")
-    left_node_connections[i][1].set_attributes("100mbit", "5ms")
+    # left_node_connections[i][0].set_attributes("100mbit", "5ms")
+    # left_node_connections[i][1].set_attributes("100mbit", "5ms")
+    left_node_connections[i][0].set_attributes("5Mbps", "5ms")
+    left_node_connections[i][1].set_attributes("5Mbps", "5ms")
+
 
 # Setting up the attributes of the connections between
 # the nodes on the right-side and the right-router
 for i in range(num_of_right_nodes):
-    right_node_connections[i][0].set_attributes("100mbit", "5ms")
-    right_node_connections[i][1].set_attributes("100mbit", "5ms")
+    # right_node_connections[i][0].set_attributes("100mbit", "5ms")
+    # right_node_connections[i][1].set_attributes("100mbit", "5ms")
+    right_node_connections[i][0].set_attributes("5Mbps", "0.00005ms")
+    right_node_connections[i][1].set_attributes("5Mbps", "50.00005msms")
 
 
 # Setting up the attributes of the connections between
 # the two routers
-left_router_connection.set_attributes("20mbit", "50ms", "pie")
-right_router_connection.set_attributes("20mbit", "50ms", "pie")
+
+# left_router_connection.set_attributes("20mbit", "50ms", "pie")
+# right_router_connection.set_attributes("20mbit", "50ms", "pie")
+left_router_connection.set_attributes("1Mbps", "0.00025ms", "pie")
+right_router_connection.set_attributes("1Mbps", "0.00025ms", "pie")
 
 ######  RUN TESTS ######
 
 # Giving the experiment a name
-experiment = Experiment("tcp-Bic-dumbbell")
+experiment = Experiment("dumbbell")
 
 # Add a flow from the left nodes to respective right nodes
 for i in range(min(num_of_left_nodes, num_of_right_nodes)):

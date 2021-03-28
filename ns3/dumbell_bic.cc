@@ -59,13 +59,13 @@ CheckQueueDelay (Ptr<QueueDisc> queue)
   fPlotQueue.close ();
 }
 
-void
-SojournTimeTrace (Time sojournTime)
-{
-std::ofstream fPlot(std::stringstream (dir+"sojournTime.plotme").str ().c_str (), std::ios::out | std::ios::app);
-	fPlot << Simulator::Now ().GetSeconds () << " " << sojournTime.ToDouble (Time::MS) << std::endl;
-fPlot.close ();
-}
+// void
+// SojournTimeTrace (Time sojournTime)
+// {
+// std::ofstream fPlot(std::stringstream (dir+"sojournTime.plotme").str ().c_str (), std::ios::out | std::ios::app);
+// 	fPlot << Simulator::Now ().GetSeconds () << " " << sojournTime.ToDouble (Time::MS) << std::endl;
+// fPlot.close ();
+// }
  
 
   /*
@@ -140,7 +140,8 @@ APP::~APP() {
 	mSocket = 0;
 }
 
-void APP::Setup(Ptr<Socket> socket, Address address, uint packetSize, uint nPackets, DataRate dataRate) {
+void APP::Setup(Ptr<Socket> socket, Address address, uint packetSize, uint nPackets, DataRate dataRate) 
+{
 	mSocket = socket;
 	mPeer = address;
 	mPacketSize = packetSize;
@@ -303,28 +304,32 @@ Config::Set (specificNode, TypeIdValue (tid));
 
 int main(int argc, char **argv)
 {
-	std::cout << "Part B started..." << std::endl;
+	
 	std::string rateHR = "5Mbps";
 	std::string latencyHR = "0.00005ms";
 	std::string rateRR = "1Mbps";
 	std::string latencyRR = "0.00025ms";
 	std::string animFile = "d-animation.xml" ;
-      std::string queue_disc_type = "FifoQueueDisc";
+      std::string queue_disc_type = "PieQueueDisc";
        
+
+      
+
+
        queue_disc_type = std::string ("ns3::") + queue_disc_type;
 
-    double simulation_time=100;
+    double simulation_time=120;
 	double oneFlowStart = 0;
 	//double otherFlowStart =20;
-    double FlowEndtime=40;
+    double FlowEndtime=100;
     
-    std::string tcpVariant1 = "TcpLedbat";
+    std::string tcpVariant1 = "TcpBic";
     std::string tcpVariant2 = "TcpBic";
 
 
 	uint port = 9000;
-	uint32_t numPackets = 1000000*100;
-	std::string transferSpeed = "2Mbps";
+	uint32_t numPackets = 10000;
+	std::string transferSpeed = rateHR;
 	
 
       std:: cout<<queue_disc_type;
@@ -423,7 +428,13 @@ int main(int argc, char **argv)
 	//different	
 	
 	
-  Config::SetDefault (queue_disc_type + "::MaxSize", QueueSizeValue (QueueSize ("38p")));
+
+  // Config::SetDefault (queue_disc_type + "::MaxSize", QueueSizeValue (QueueSize ("38p")));
+
+  	//We test both RED and drop tail routers at the bottleneck link. For RED, we use adaptive RED with the bottom of max_p set to 0.001.
+	
+  Config::SetDefault (queue_disc_type + "::MaxSize", QueueSizeValue (QueueSize ("0.001")));
+
 
 AsciiTraceHelper asciiTraceHelper;
   Ptr<OutputStreamWrapper> streamWrapper;
@@ -474,11 +485,11 @@ AsciiTraceHelper asciiTraceHelper;
 
 
 
-      Config::ConnectWithoutContext ("/NodeList/0/$ns3::TrafficControlLayer/RootQueueDiscList/0/SojournTime",MakeCallback (&SojournTimeTrace));
+      //Config::ConnectWithoutContext ("/NodeList/0/$ns3::TrafficControlLayer/RootQueueDiscList/0/SojournTime",MakeCallback (&SojournTimeTrace));
 
 	//temporary disable
-	//p2pHR.EnablePcapAll("tcp_HR_b");
-	//p2pRR.EnablePcapAll("tcp_RR_b");
+	p2pHR.EnablePcapAll("tcp_HR_b");
+	p2pRR.EnablePcapAll("tcp_RR_b");
 
 	//Turning on Static Global Routing
 	std::cout << "Turning on Static Global Routing" << std::endl;
