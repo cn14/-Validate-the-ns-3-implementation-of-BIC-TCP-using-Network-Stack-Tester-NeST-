@@ -20,7 +20,7 @@
   B.RTT
   
   <img src="https://github.com/cn14/Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST/blob/main/results-mixed%20plots/prp%20topology/TcpBic-prp-RTT.png" >
-<hr>
+
  ## Topology2
  
  A.flow1 CWND
