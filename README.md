@@ -1,7 +1,9 @@
 # Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST
 
-
 # Results
+ results for ns3 ....
+
+# Mixed Results
 
  1.prp topology
   A.CWND
