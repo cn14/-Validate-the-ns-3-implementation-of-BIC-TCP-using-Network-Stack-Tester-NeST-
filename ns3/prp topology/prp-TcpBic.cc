@@ -68,6 +68,7 @@ static Ptr<OutputStreamWrapper> nextRxStream;
 static Ptr<OutputStreamWrapper> inFlightStream;
 static uint32_t cWndValue;
 static uint32_t ssThreshValue;
+static uint32_t seg_size;
 
 
 static void
@@ -75,11 +76,11 @@ CwndTracer (uint32_t oldval, uint32_t newval)
 {
   if (firstCwnd)
     {
-      *cWndStream->GetStream () << "0.0 " << oldval/1500 << std::endl;
+      *cWndStream->GetStream () << "0.0 " << (oldval)  << std::endl;
       firstCwnd = false;
     }
-  *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval/1500 << std::endl;
-  cWndValue = newval/1500;
+  *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " <<  (newval) /seg_size  << std::endl;
+  cWndValue = newval /seg_size ;
 
   if (!firstSshThr)
     {
@@ -92,15 +93,15 @@ SsThreshTracer (uint32_t oldval, uint32_t newval)
 {
   if (firstSshThr)
     {
-      *ssThreshStream->GetStream () << "0.0 " << oldval << std::endl;
+      *ssThreshStream->GetStream () << "0.0 " <<  (oldval) << std::endl;
       firstSshThr = false;
     }
-  *ssThreshStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval << std::endl;
-  ssThreshValue = newval;
+  *ssThreshStream->GetStream () << Simulator::Now ().GetSeconds () << " " <<  (newval) / seg_size<< std::endl;
+  ssThreshValue = newval / seg_size;
 
   if (!firstCwnd)
     {
-      *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " << cWndValue << std::endl;
+      *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " << cWndValue  << std::endl;
     }
 }
 
@@ -109,10 +110,10 @@ RttTracer (Time oldval, Time newval)
 {
   if (firstRtt)
     {
-      *rttStream->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
+      *rttStream->GetStream () << "0.0 " << oldval.GetSeconds () * 1000 << std::endl;
       firstRtt = false;
     }
-  *rttStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
+  *rttStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () * 1000 << std::endl;
 }
 
 static void
@@ -120,10 +121,10 @@ RtoTracer (Time oldval, Time newval)
 {
   if (firstRto)
     {
-      *rtoStream->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
+      *rtoStream->GetStream () << "0.0 " << oldval.GetSeconds () * 1000 << std::endl;
       firstRto = false;
     }
-  *rtoStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
+  *rtoStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () * 1000 << std::endl;
 }
 
 static void
@@ -208,19 +209,19 @@ int main (int argc, char *argv[])
 {
   std::string transport_prot = "TcpBic";
   double error_p = 0.0;
-  std::string bandwidth = "2Mbps";
-  std::string delay = "0.01ms";
-  std::string access_bandwidth = "10Mbps";
-  std::string access_delay = "45ms";
+  std::string bandwidth = "50Mbps";
+  std::string delay = "0.5ms";
+  std::string access_bandwidth = "200Mbps";
+  std::string access_delay = "30ms";
   bool tracing = true;
-  std::string prefix_file_name = "p2p_bic";
+  std::string prefix_file_name = "TcpBic";
   uint64_t data_mbytes = 0;
   uint32_t mtu_bytes = 1500;
   uint16_t num_flows = 1;
-  double duration = 100.0;
+  double duration = 50.0;
   uint32_t run = 0;
   bool flow_monitor = true;
-  bool pcap = true;
+  bool pcap = false;
   bool sack = true;
   std::string queue_disc_type = "ns3::PfifoFastQueueDisc";
   std::string recovery = "ns3::TcpClassicRecovery";
@@ -271,15 +272,21 @@ int main (int argc, char *argv[])
   delete temp_header;
   uint32_t tcp_adu_size = mtu_bytes - 20 - (ip_header + tcp_header);
   NS_LOG_LOGIC ("TCP ADU size is: " << tcp_adu_size);
+  seg_size = tcp_adu_size;
 
   // Set the simulation start and stop time
   double start_time = 0.1;
   double stop_time = start_time + duration;
 
+  //segment size
   // 2 MB of TCP buffer
-  Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
-  Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
-  Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (sack));
+  // Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (4194304));
+  // Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (4194304));
+  // Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (sack));
+   Config::SetDefault ("ns3::TcpSocket::SndBufSize",UintegerValue (8192000));
+  Config::SetDefault ("ns3::TcpSocket::RcvBufSize",UintegerValue (8192000));
+  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (10));
+  
 
   Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
                       TypeIdValue (TypeId::LookupByName (recovery)));
@@ -393,7 +400,7 @@ int main (int argc, char *argv[])
       Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (tcp_adu_size));
       BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
       ftp.SetAttribute ("Remote", remoteAddress);
-      ftp.SetAttribute ("SendSize", UintegerValue (tcp_adu_size));
+      //ftp.SetAttribute ("SendSize", UintegerValue (tcp_adu_size));
       ftp.SetAttribute ("MaxBytes", UintegerValue (data_mbytes * 1000000));
 
       ApplicationContainer sourceApp = ftp.Install (sources.Get (i));
@@ -449,4 +456,3 @@ int main (int argc, char *argv[])
   Simulator::Destroy ();
   return 0;
 }
-  
