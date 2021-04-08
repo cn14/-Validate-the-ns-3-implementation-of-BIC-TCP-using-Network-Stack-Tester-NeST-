@@ -1,8 +1,12 @@
 
 # Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST
 
+# TOPOLOGY etc
+...........................write here
 # Results
- results for ns3 ....
+  <a href="https://github.com/cn14/Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST/tree/main/nest"> ns3 results</a>   
+  <a href="https://github.com/cn14/Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST/tree/main/ns3"> nest results</a> 
+ 
 
 # Mixed Results
 
