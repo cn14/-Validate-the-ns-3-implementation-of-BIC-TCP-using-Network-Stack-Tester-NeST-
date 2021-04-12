@@ -17,5 +17,7 @@ Recommended Reading:
 
 
 ## Result plots:
-https://github.com/cn14/Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST/blob/main/report.pdf
+https://github.com/cn14/Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST/blob/main/report.pdf   
+Note:Sometimes github not loading pdf.please download pdf to see results.
+
 
