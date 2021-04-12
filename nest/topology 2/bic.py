@@ -13,10 +13,10 @@ from nest.experiment import *
 #                       \                  
 #                        \                
 #                        Router ------------- Host 3(h3)
-#   .                  /                                    .
-#   .                 /                                     .
-#   .                /                                      .
-#   .               /       	                                .
+#   .                  /                                    
+#   .                 /                                     
+#   .                /                                      
+#   .               /       	                                
 #   Host 2(h2)------                            
 #
 #
