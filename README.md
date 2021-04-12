@@ -16,4 +16,4 @@ Recommended Reading:
 ● ns-3 code for BIC (Path: ns-3.xx/src/internet/model/tcp-bic.{h, cc})   
 
 
-Results plots:https://github.com/cn14/Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST/blob/main/report.pdf
+## Result plots:https://github.com/cn14/Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST/blob/main/report.pdf
