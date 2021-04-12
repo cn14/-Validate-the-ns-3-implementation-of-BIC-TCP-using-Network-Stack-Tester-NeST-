@@ -14,3 +14,6 @@ Recommended Reading:
 ● Linux kernel code (Link:https://elixir.bootlin.com/linux/v5.11-rc7/source/net/ipv4/tcp_bic.c​)   
 ● BIC Paper (Link: ​https://ieeexplore.ieee.org/abstract/document/1354672/​)   
 ● ns-3 code for BIC (Path: ns-3.xx/src/internet/model/tcp-bic.{h, cc})   
+
+
+Results plots:https://github.com/cn14/Validate-the-ns-3-implementation-of-BIC-TCP-using-Network-Stack-Tester-NeST/blob/main/report.pdf
